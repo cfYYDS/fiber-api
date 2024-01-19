@@ -15,12 +15,20 @@ func welcome(c *fiber.Ctx) error {
 func setupRoutes(app *fiber.App) {
 	//welcome endpoint
 	app.Get("/api", welcome)
-	//User endpoiunt
+	//User endpoints
 	app.Post("/api/users", routes.CreateUser)
 	app.Get("/api/users", routes.GetUsers)
 	app.Get("/api/users/:id", routes.GetUser)
 	app.Put("/api/user/:id", routes.UpdateUser)
 	app.Delete("/api/user/:id", routes.DeleteUser)
+
+	// Product endpoints
+	app.Post("/api/products", routes.CreateProduct)
+	app.Get("/api/products", routes.GetProducts)
+	app.Get("/api/product/:id", routes.GetProduct)
+	app.Put("/api/product/:id", routes.UpdateProduct)
+	app.Delete("/api/product/:id", routes.DeleteProduct)
+
 }
 func main() {
 	database.ConnectDb()
