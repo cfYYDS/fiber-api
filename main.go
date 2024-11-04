@@ -35,9 +35,22 @@ func setupRoutes(app *fiber.App) {
 	app.Get("/api/orders/:id", routes.GetOrder)
 
 }
-func main() {
+
+//	func main() {
+//		database.ConnectDb()
+//		app := fiber.New()
+//		setupRoutes(app)
+//		log.Fatal(app.Listen(":3000"))
+//	}
+//
+// Vercel 期望的 `Handler` 函数
+func Handler() *fiber.App {
 	database.ConnectDb()
 	app := fiber.New()
 	setupRoutes(app)
-	log.Fatal(app.Listen(":3000"))
+	return app
+}
+
+func main() {
+	log.Fatal(Handler().Listen(":3000"))
 }
