@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-
 	"github.com/cfyyds/fiber-api/database"
 	"github.com/cfyyds/fiber-api/routes"
 	"github.com/gofiber/fiber/v2"
@@ -13,7 +12,9 @@ var app *fiber.App
 
 func init() {
 	// 初始化数据库
-	database.ConnectDb()
+	if err := database.ConnectDb(); err != nil {
+		panic("Failed to connect to the database: " + err.Error())
+	}
 
 	// 创建 Fiber 应用实例
 	app = fiber.New()
@@ -23,25 +24,26 @@ func init() {
 }
 
 func welcome(c *fiber.Ctx) error {
-	return c.SendString("welcome to my awesome API")
+	return c.SendString("Welcome to my awesome API")
 }
 
 func setupRoutes(app *fiber.App) {
 	// Welcome endpoint
 	app.Get("/api", welcome)
+
 	// User endpoints
 	app.Post("/api/users", routes.CreateUser)
 	app.Get("/api/users", routes.GetUsers)
 	app.Get("/api/users/:id", routes.GetUser)
-	app.Put("/api/user/:id", routes.UpdateUser)
-	app.Delete("/api/user/:id", routes.DeleteUser)
+	app.Put("/api/users/:id", routes.UpdateUser)  // Corrected to plural
+	app.Delete("/api/users/:id", routes.DeleteUser)  // Corrected to plural
 
 	// Product endpoints
 	app.Post("/api/products", routes.CreateProduct)
 	app.Get("/api/products", routes.GetProducts)
 	app.Get("/api/products/:id", routes.GetProduct)
-	app.Put("/api/product/:id", routes.UpdateProduct)
-	app.Delete("/api/product/:id", routes.DeleteProduct)
+	app.Put("/api/products/:id", routes.UpdateProduct)
+	app.Delete("/api/products/:id", routes.DeleteProduct)
 
 	// Order endpoints
 	app.Post("/api/orders", routes.CreateOrder)
@@ -49,8 +51,8 @@ func setupRoutes(app *fiber.App) {
 	app.Get("/api/orders/:id", routes.GetOrder)
 }
 
-// Vercel 期望的 `Handler` 函数
+// Vercel 期望的 Handler 函数
 func Handler(w http.ResponseWriter, r *http.Request) {
 	// 使用 ServeHTTP 使 Fiber 应用符合 http.Handler 接口
-	app.Handler()
+	app.Handler()(w, r)  // Fixed: pass w and r to the handler
 }
